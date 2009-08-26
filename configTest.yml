@@ -1,0 +1,58 @@
+--- 
+# These options control the overall code generation strategy. If you omit
+# any of them from the configuration file, you'll be prompted at template
+# run time to supply them.
+#
+# rails branch options: any branch in the http://github.com/rails/rails/tree/master repo
+rails_branch: 2-3-stable
+# database options: postgresql (default), mysql, sqlite
+database: postgresql
+# exception options: exceptional (default), hoptoad
+exception_handling: exceptional
+# monitoring options: new_relic (default), scout
+monitoring: new_relic
+# vendor branch management: piston (default), braid, git (submodules), none
+branch_management: piston
+# rails strategy: vendored (default), gem, symlinked
+rails_strategy: vendored
+# link_rails_root is only used if rails_strategy == symlinked
+link_rails_root: ~/rails
+# IE6 blocking: none, light (default), ie6nomore
+ie6_blocking: light
+# javascript library: prototype (default), jquery
+javascript_library: prototype
+# Design: none (default), bluetrip
+design: none
+#
+# These options can be omitted, and the template will default to sensible behavior
+#
+# branches to create in the git repo. Default branch will be checked out.
+# if none specified, just leaves the single master branch.
+git_branches:
+  master:
+  development: default
+  staging:
+#
+# These options are plugged into the generated code. You can leave any of
+# them that you're not using set to their default values
+#
+# Mail server connection information for config/initializers/mail.rb
+smtp_address: 72.249.191.186
+smtp_domain: example.com
+smtp_username: mikeg1@example.com
+smtp_password: password
+# Capistrano information for config/deploy.rb
+capistrano_user: webadmin
+capistrano_repo_host: github.com
+capistrano_production_host: 111.111.111.111
+capistrano_staging_host: 111.111.111.111
+# API keys
+# Note that Exceptional generates a new API key for each application
+exceptional_api_key: PASTE_YOUR_API_KEY_HERE
+# Note that Hoptoad generates a new API key for each application
+hoptoad_api_key: PASTE_YOUR_API_KEY_HERE
+newrelic_api_key: PASTE_YOUR_API_KEY_HERE
+# Return address info for app/models/notifier.rb
+notifier_email_from: Lark Group <noreply@example.com>
+default_url_options_host: example.com
+
