@@ -354,6 +354,23 @@ gem "webrat",
 
 commit_state "Added plugins and gems"
 
+
+###########################
+# Initialize HAML / Rails #
+###########################
+
+run "haml --rails ."
+run "echo -e 'y\nn\n' | compass --rails ."
+run "mkdir -p public/stylesheets/960"
+%w(text reset 960).each do |file|
+  from_repo "#{file}.css", "public/stylesheets/960/#{file}.css"
+end
+file "app/stylesheets/screen.sass", "@import compass/utilities.sass\n@import util.sass\n"
+from_repo "util.sass", "app/stylesheets/_util.sass"
+
+commit_state "Initialize Haml and Compass"
+
+
 # environment updates
 in_root do
   run 'cp config/environments/production.rb config/environments/staging.rb'
@@ -482,6 +499,8 @@ if design == "bluetrip"
   	padding: 0;
   	list-style-type: none;
   }
+
+
 
   #left_menu ul a {
   	display: block;
