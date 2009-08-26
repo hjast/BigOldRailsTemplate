@@ -330,7 +330,9 @@ gem "binarylogic-searchlogic",
 gem "justinfrench-formtastic", 
   :lib     => 'formtastic', 
   :source  => 'http://gems.github.com'
-  
+gem 'haml-edge',             :version => '>= 2.1.3', :lib => 'haml'
+gem 'chriseppstein-compass', :lib => 'compass', :version => '>= 0.6.6'
+    
 # development only
 gem "cwninja-inaction_mailer", 
   :lib => 'inaction_mailer/force_load', 
@@ -414,11 +416,11 @@ if design == "bluetrip"
 end
 
 file 'app/views/layouts/_flashes.html.erb', <<-END
-<div id="flash" class="#{flash_class}">
+#flash.#{flash_class}
   <% flash.each do |key, value| -%>
-    <div id="flash_<%= key %>" class="<%= key %>"><%=h value %></div>
+  #flash_<%= key %>.<%=.key.%>
+    <%=h value %>
   <% end -%>
-</div>
 END
 
 if @javascript_library == "prototype"
@@ -430,39 +432,35 @@ end
 if design == "bluetrip"
   extra_stylesheet_tags = <<-END
   <%= stylesheet_link_tag 'screen', :media => 'screen, projection', :cache => true %>
-  <%= stylesheet_link_tag 'print', :media => 'print', :cache => true %>
-  <!--[if IE]>
-    <%= stylesheet_link_tag 'ie', :media => 'screen, projection', :cache => true %>
-  <![endif]-->
-  <%= stylesheet_link_tag 'style', :media => 'screen, projection', :cache => true %>
+<%= stylesheet_link_tag 'print', :media => 'print', :cache => true %>
+/
+  [if IE]>
+  <%= stylesheet_link_tag 'ie', :media => 'screen, projection', :cache => true %>
+  <![endif]
+<%= stylesheet_link_tag 'style', :media => 'screen, projection', :cache => true %>
+
 END
   footer_class = "span-24 small quiet"
 end
 
-file 'app/views/layouts/application.html.erb', <<-END
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-  <head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <title><%= @page_title || controller.action_name %></title>
-    #{extra_stylesheet_tags}
+file 'app/views/layouts/application.html.haml', <<-END
+!!!
+%html{ "xml:lang" => "en", :lang => "en", :xmlns => "http://www.w3.org/1999/xhtml" }
+  %head
+    %meta{ :content => "text/html; charset=utf-8", "http-equiv" => "Content-type" }
+    %title
+      <%= @page_title || controller.action_name %>
+    \#{extra_stylesheet_tags}
     <%= stylesheet_link_tag 'formtastic', 'formtastic_changes', 'application', :media => 'all', :cache => true %>
-    #{javascript_include_tags}
+    \#{javascript_include_tags}
     <%= yield :head %>
-  </head>
-  <body>
-    <div class="container">
+  %body
+    .container
       <%= yield :top_menu %>
       <%= render :partial => 'layouts/flashes' -%>
       <%= yield %>
-
-      <div id="footer" class="#{footer_class}">
+      #footer.#{footer_class}
         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      </div>    
-    </div>
-  </body>
-</html>
 END
 
 # rakefile for use with inaction_mailer
@@ -501,7 +499,7 @@ if design == "bluetrip"
   }
 
 
-
+˝
   #left_menu ul a {
   	display: block;
   	width: 150px;
@@ -2822,49 +2820,43 @@ END
 end
 
 file 'app/views/users/show.html.erb', <<-END
-<p>
-  <b>Login:</b>
+%p
+  %b
+    Login:
   <%=h @user.login %>
-</p>
-
-<p>
-  <b>Email:</b>
+%p
+  %b
+    Email:
   <%=h @user.email %>
-</p>
-
 <% admin_only do %>
-  <p>
-    <b>Login count:</b>
-    <%=h @user.login_count %>
-  </p>
-
-  <p>
-    <b>Last request at:</b>
-    <%=h @user.last_request_at %>
-  </p>
-
-  <p>
-    <b>Last login at:</b>
-    <%=h @user.last_login_at %>
-  </p>
-
-  <p>
-    <b>Current login at:</b>
-    <%=h @user.current_login_at %>
-  </p>
-
-  <p>
-    <b>Last login ip:</b>
-    <%=h @user.last_login_ip %>
-  </p>
-
-  <p>
-    <b>Current login ip:</b>
-    <%=h @user.current_login_ip %>
-  </p>
+%p
+  %b
+    Login count:
+  <%=h @user.login_count %>
+%p
+  %b
+    Last request at:
+  <%=h @user.last_request_at %>
+%p
+  %b
+    Last login at:
+  <%=h @user.last_login_at %>
+%p
+  %b
+    Current login at:
+  <%=h @user.current_login_at %>
+%p
+  %b
+    Last login ip:
+  <%=h @user.last_login_ip %>
+%p
+  %b
+    Current login ip:
+  <%=h @user.current_login_ip %>
 <% end %>
 
 <%= link_to 'Edit', edit_account_path %>
+
 END
 
 file 'db/migrate/01_create_users.rb', <<-END
@@ -2962,20 +2954,31 @@ END
 elsif ie6_blocking == "ie6nomore"
   ie6_warning = <<-END
   <!--[if lt IE 7]>
-  <div style='border: 1px solid #F7941D; background: #FEEFDA; text-align: center; clear: both; height: 75px; position: relative;'>
-    <div style='position: absolute; right: 3px; top: 3px; font-family: courier new; font-weight: bold;'><a href='#' onclick='javascript:this.parentNode.parentNode.style.display="none"; return false;'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-cornerx.jpg' style='border: none;' alt='Close this notice'/></a></div>
-    <div style='width: 640px; margin: 0 auto; text-align: left; padding: 0; overflow: hidden; color: black;'>
-      <div style='width: 75px; float: left;'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-warning.jpg' alt='Warning!'/></div>
-      <div style='width: 275px; float: left; font-family: Arial, sans-serif;'>
-        <div style='font-size: 14px; font-weight: bold; margin-top: 12px;'>You are using an outdated browser</div>
-        <div style='font-size: 12px; margin-top: 6px; line-height: 12px;'>For a better experience using this site, please upgrade to a modern web browser.</div>
-      </div>
-      <div style='width: 75px; float: left;'><a href='http://www.firefox.com' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-firefox.jpg' style='border: none;' alt='Get Firefox 3.5'/></a></div>
-      <div style='width: 75px; float: left;'><a href='http://www.browserforthebetter.com/download.html' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-ie8.jpg' style='border: none;' alt='Get Internet Explorer 8'/></a></div>
-      <div style='width: 73px; float: left;'><a href='http://www.apple.com/safari/download/' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-safari.jpg' style='border: none;' alt='Get Safari 4'/></a></div>
-      <div style='float: left;'><a href='http://www.google.com/chrome' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-chrome.jpg' style='border: none;' alt='Get Google Chrome'/></a></div>
-    </div>
-  </div>
+%div{ :style => "border: 1px solid #F7941D; background: #FEEFDA; text-align: center; clear: both; height: 75px; position: relative;" }
+  %div{ :style => "position: absolute; right: 3px; top: 3px; font-family: courier new; font-weight: bold;" }
+    %a{ :href => "#", :onclick => "javascript:this.parentNode.parentNode.style.display=\"none\"; return false;" }
+      %img{ :src => "http://www.ie6nomore.com/files/theme/ie6nomore-cornerx.jpg", :alt => "Close this notice", :style => "border: none;" }
+  %div{ :style => "width: 640px; margin: 0 auto; text-align: left; padding: 0; overflow: hidden; color: black;" }
+    %div{ :style => "width: 75px; float: left;" }
+      %img{ :src => "http://www.ie6nomore.com/files/theme/ie6nomore-warning.jpg", :alt => "Warning!" }
+    %div{ :style => "width: 275px; float: left; font-family: Arial, sans-serif;" }
+      %div{ :style => "font-size: 14px; font-weight: bold; margin-top: 12px;" }
+        You are using an outdated browser
+      %div{ :style => "font-size: 12px; margin-top: 6px; line-height: 12px;" }
+        For a better experience using this site, please upgrade to a modern web browser.
+    %div{ :style => "width: 75px; float: left;" }
+      %a{ :href => "http://www.firefox.com", :target => "_blank" }
+        %img{ :src => "http://www.ie6nomore.com/files/theme/ie6nomore-firefox.jpg", :alt => "Get Firefox 3.5", :style => "border: none;" }
+    %div{ :style => "width: 75px; float: left;" }
+      %a{ :href => "http://www.browserforthebetter.com/download.html", :target => "_blank" }
+        %img{ :src => "http://www.ie6nomore.com/files/theme/ie6nomore-ie8.jpg", :alt => "Get Internet Explorer 8", :style => "border: none;" }
+    %div{ :style => "width: 73px; float: left;" }
+      %a{ :href => "http://www.apple.com/safari/download/", :target => "_blank" }
+        %img{ :src => "http://www.ie6nomore.com/files/theme/ie6nomore-safari.jpg", :alt => "Get Safari 4", :style => "border: none;" }
+    %div{ :style => "float: left;" }
+      %a{ :href => "http://www.google.com/chrome", :target => "_blank" }
+        %img{ :src => "http://www.ie6nomore.com/files/theme/ie6nomore-chrome.jpg", :alt => "Get Google Chrome", :style => "border: none;" }
+
   <![endif]-->
 END
 end
@@ -2986,211 +2989,303 @@ if design == "bluetrip"
   main_with_left_menu_class = "span-17 suffix-1 last"
 end
 
-file 'app/views/pages/home.html.erb', <<-END
+file 'app/views/pages/home.html.haml', <<-END
 <% content_for :top_menu do %>
-  <div id="top_menu" class="#{top_menu_class}">
-    <% anonymous_only do %>
-      <%= link_to "Register", new_account_path %>
-      <%= link_to "Login", new_user_session_path %>
-    <% end %>
-    <% authenticated_only do %>
-      <%= link_to "Logout", user_session_path, :method => :delete, :confirm => "Are you sure you want to logout?" %>
-      <%= link_to "Your Account", account_path %>
-    <% end %>
-  </div>
+#top_menu.#{top_menu_class}
+  <% anonymous_only do %>
+  <%= link_to "Register", new_account_path %>
+  <%= link_to "Login", new_user_session_path %>
+  <% end %>
+  <% authenticated_only do %>
+  <%= link_to "Logout", user_session_path, :method => :delete, :confirm => "Are you sure you want to logout?" %>
+  <%= link_to "Your Account", account_path %>
+  <% end %>
 <% end %>
+#main_wrapper
+  #left_menu.#{left_menu_class}
+    %ul
+      <% anonymous_only do %>
+      %li
+        <%= link_to "Register", new_account_path %>
+      %li
+        <%= link_to "Login", new_user_session_path %>
+      <% end %>
+      <% authenticated_only do %>
+      %li
+        <%= link_to "App menu item", "#" %>
+      %li
+        <%= link_to "App menu item", "#" %>
+      %li
+        <%= link_to "App menu item", "#" %>
+      <% end %>
+  #main_with_left_menu.#{main_with_left_menu_class}
+    %h1
+      Welcome to #{current_app_name}
+    /
+      [if lt IE 7]>
+      <p class="flash_error">
+      Your browser is obsolete. For best results in #{current_app_name}, please <%= link_to "Upgrade", pages_path(:action => 'upgrade'), :target => :blank %>
+      </p>
+      <![endif]
+    %p
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-<div id="main_wrapper">
-  <div id="left_menu" class="#{left_menu_class}">
-    <ul>
-    <% anonymous_only do %>
-      <li><%= link_to "Register", new_account_path %></li>
-      <li><%= link_to "Login", new_user_session_path %></li>
-    <% end %>
-    <% authenticated_only do %>
-      <li><%= link_to "App menu item", "#" %></li>
-      <li><%= link_to "App menu item", "#" %></li>
-      <li><%= link_to "App menu item", "#" %></li>
-    <% end %>
-    </ul>
-  </div>
-
-  <div id="main_with_left_menu" class="#{main_with_left_menu_class}">
-    <h1>Welcome to #{current_app_name}</h1>
-      <!--[if lt IE 7]>
-  	<p class="flash_error">
-  		Your browser is obsolete. For best results in #{current_app_name}, please <%= link_to "Upgrade", pages_path(:action => 'upgrade'), :target => :blank %>
-  	</p>
-    <![endif]-->
-
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-  </div>
-</div>
 END
 
-file 'app/views/pages/css_test.html.erb', <<-END
-<!-- Sample Content to Plugin to Template -->
-<h1>CSS Basic Elements</h1>
+file 'app/views/pages/css_test.html.haml', <<-END
+/
+  Sample Content to Plugin to Template
+%h1
+  CSS Basic Elements
+%p
+  The purpose of this HTML is to help determine what default settings are with CSS and to make sure that all possible HTML Elements are included in this HTML so as to not miss any possible Elements when designing a site.
+%hr
+%h1#headings
+  Headings
+%h1
+  Heading 1
+%h2
+  Heading 2
+%h3
+  Heading 3
+%h4
+  Heading 4
+%h5
+  Heading 5
+%h6
+  Heading 6
+%small
+  %a{ :href => "#wrapper" }
+    [top]
+%hr
+%h1#paragraph
+  Paragraph
+%img{ :src => "images/css_gods_language.png", :alt => "CSS | God's Language", :style => "width:250px;height:125px;float:right" }
+%p
+  Lorem ipsum dolor sit amet,
+  %a{ :href => "#", :title => "test link" }
+    test link
+  adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus. Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy. Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.
+%p
+  Lorem ipsum dolor sit amet,
+  %em
+    emphasis
+  consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus. Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy. Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.
+%small
+  %a{ :href => "#wrapper" }
+    [top]
+%hr
+%h1#list_types
+  List Types
+%h3
+  Definition List
+%dl
+  %dt
+    Definition List Title
+  %dd
+    This is a definition list division.
+%h3
+  Ordered List
+%ol
+  %li
+    List Item 1
+  %li
+    List Item 2
+  %li
+    List Item 3
+%h3
+  Unordered List
+%ul
+  %li
+    List Item 1
+  %li
+    List Item 2
+  %li
+    List Item 3
+%small
+  %a{ :href => "#wrapper" }
+    [top]
+%hr
+%h1#form_elements
+  Fieldsets, Legends, and Form Elements
+%fieldset
+  %legend
+    Legend
+  %p
+    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus.
+  %form
+    %h2
+      Form Element
+    %p
+      Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui.
+    %p
+      %label{ :for => "text_field" }
+        Text Field:
+      %br
+      %input#text_field{ :type => "text" }
+    %p
+      %label{ :for => "text_area" }
+        Text Area:
+      %br
+      %textarea#text_area
+    %p
+      %label{ :for => "select_element" }
+        Select Element:
+      %br
+      %select{ :name => "select_element" }
+        %optgroup{ :label => "Option Group 1" }
+          %option{ :value => "1" }
+            Option 1
+          %option{ :value => "2" }
+            Option 2
+          %option{ :value => "3" }
+            Option 3
+        %optgroup{ :label => "Option Group 2" }
+          %option{ :value => "1" }
+            Option 1
+          %option{ :value => "2" }
+            Option 2
+          %option{ :value => "3" }
+            Option 3
+    %p
+      %label{ :for => "radio_buttons" }
+        Radio Buttons:
+      %br
+      %input.radio{ :name => "radio_button", :type => "radio", :value => "radio_1" }
+      Radio 1
+      %br
+      %input.radio{ :name => "radio_button", :type => "radio", :value => "radio_2" }
+      Radio 2
+      %br
+      %input.radio{ :name => "radio_button", :type => "radio", :value => "radio_3" }
+      Radio 3
+      %br
+    %p
+      %label{ :for => "checkboxes" }
+        Checkboxes:
+      %br
+      %input.checkbox{ :name => "checkboxes", :type => "checkbox", :value => "check_1" }
+      Radio 1
+      %br
+      %input.checkbox{ :name => "checkboxes", :type => "checkbox", :value => "check_2" }
+      Radio 2
+      %br
+      %input.checkbox{ :name => "checkboxes", :type => "checkbox", :value => "check_3" }
+      Radio 3
+      %br
+    %p
+      %label{ :for => "password" }
+        Password:
+      %br
+      %input.password{ :name => "password", :type => "password" }
+    %p
+      %label{ :for => "file" }
+        File Input:
+      %br
+      %input.file{ :name => "file", :type => "file" }
+    %p
+      %input.button{ :type => "reset", :value => "Clear" }
+      %input.button{ :type => "submit", :value => "Submit" }
+%small
+  %a{ :href => "#wrapper" }
+    [top]
+%hr
+%h1#tables
+  Tables
+%table{ :cellspacing => "0", :cellpadding => "0" }
+  %tr
+    %th
+      Table Header 1
+    %th
+      Table Header 2
+    %th
+      Table Header 3
+  %tr
+    %td
+      Division 1
+    %td
+      Division 2
+    %td
+      Division 3
+  %tr.even
+    %td
+      Division 1
+    %td
+      Division 2
+    %td
+      Division 3
+  %tr
+    %td
+      Division 1
+    %td
+      Division 2
+    %td
+      Division 3
+%small
+  %a{ :href => "#wrapper" }
+    [top]
+%hr
+%h1#misc
+  Misc Stuff - abbr, acronym, pre, code, sub, sup, etc.
+%p
+  Lorem
+  %sup
+    superscript
+  dolor
+  %sub
+    subscript
+  amet, consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam.
+  %cite
+    cite
+  \. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus. Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy.
+  %acronym{ :title => "National Basketball Association" }
+    NBA
+  Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.
+  %abbr{ :title => "Avenue" }
+    AVE
+%pre
+  %p
+    Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus. Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy.
+    %acronym{ :title => "National Basketball Association" }
+      NBA
+    Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.
+    %abbr{ :title => "Avenue" }
+      AVE
+%blockquote
+  "This stylesheet is going to help so freaking much."
+  %br
+  \-Blockquote
+%small
+  %a{ :href => "#wrapper" }
+    [top]
+/
+  End of Sample Content
 
-<p>The purpose of this HTML is to help determine what default settings are with CSS and to make sure that all possible HTML Elements are included in this HTML so as to not miss any possible Elements when designing a site.</p>
-
-<hr />
-
-<h1 id="headings">Headings</h1>
-
-<h1>Heading 1</h1>
-<h2>Heading 2</h2>
-<h3>Heading 3</h3>
-<h4>Heading 4</h4>
-<h5>Heading 5</h5>
-<h6>Heading 6</h6>
-
-<small><a href="#wrapper">[top]</a></small>
-<hr />
-
-
-<h1 id="paragraph">Paragraph</h1>
-
-<img style="width:250px;height:125px;float:right" src="images/css_gods_language.png" alt="CSS | God's Language" />
-<p>Lorem ipsum dolor sit amet, <a href="#" title="test link">test link</a> adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus. Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy. Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.</p>
-
-<p>Lorem ipsum dolor sit amet, <em>emphasis</em> consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus. Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy. Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.</p>
-
-<small><a href="#wrapper">[top]</a></small>
-<hr />
-
-<h1 id="list_types">List Types</h1>
-
-<h3>Definition List</h3>
-<dl>
-	<dt>Definition List Title</dt>
-	<dd>This is a definition list division.</dd>
-</dl>
-
-<h3>Ordered List</h3>
-<ol>
-	<li>List Item 1</li>
-	<li>List Item 2</li>
-	<li>List Item 3</li>
-</ol>
-
-<h3>Unordered List</h3>
-<ul>
-	<li>List Item 1</li>
-	<li>List Item 2</li>
-	<li>List Item 3</li>
-</ul>
-
-<small><a href="#wrapper">[top]</a></small>
-<hr />
-
-<h1 id="form_elements">Fieldsets, Legends, and Form Elements</h1>
-
-<fieldset>
-	<legend>Legend</legend>
-	
-	<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus.</p>
-	
-	<form>
-		<h2>Form Element</h2>
-		
-		<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui.</p>
-		
-		<p><label for="text_field">Text Field:</label><br />
-		<input type="text" id="text_field" /></p>
-		
-		<p><label for="text_area">Text Area:</label><br />
-		<textarea id="text_area"></textarea></p>
-		
-		<p><label for="select_element">Select Element:</label><br />
-			<select name="select_element">
-			<optgroup label="Option Group 1">
-				<option value="1">Option 1</option>
-				<option value="2">Option 2</option>
-				<option value="3">Option 3</option>
-			</optgroup>
-			<optgroup label="Option Group 2">
-				<option value="1">Option 1</option>
-				<option value="2">Option 2</option>
-				<option value="3">Option 3</option>
-			</optgroup>
-		</select></p>
-		
-		<p><label for="radio_buttons">Radio Buttons:</label><br />
-			<input type="radio" class="radio" name="radio_button" value="radio_1" /> Radio 1<br/>
-				<input type="radio" class="radio" name="radio_button" value="radio_2" /> Radio 2<br/>
-				<input type="radio" class="radio" name="radio_button" value="radio_3" /> Radio 3<br/>
-		</p>
-		
-		<p><label for="checkboxes">Checkboxes:</label><br />
-			<input type="checkbox" class="checkbox" name="checkboxes" value="check_1" /> Radio 1<br/>
-				<input type="checkbox" class="checkbox" name="checkboxes" value="check_2" /> Radio 2<br/>
-				<input type="checkbox" class="checkbox" name="checkboxes" value="check_3" /> Radio 3<br/>
-		</p>
-		
-		<p><label for="password">Password:</label><br />
-			<input type="password" class="password" name="password" />
-		</p>
-		
-		<p><label for="file">File Input:</label><br />
-			<input type="file" class="file" name="file" />
-		</p>
-		
-		
-		<p><input class="button" type="reset" value="Clear" /> <input class="button" type="submit" value="Submit" />
-		</p>
-		
-
-		
-	</form>
-	
-</fieldset>
-
-<small><a href="#wrapper">[top]</a></small>
-<hr />
-
-<h1 id="tables">Tables</h1>
-
-<table cellspacing="0" cellpadding="0">
-	<tr>
-		<th>Table Header 1</th><th>Table Header 2</th><th>Table Header 3</th>
-	</tr>
-	<tr>
-		<td>Division 1</td><td>Division 2</td><td>Division 3</td>
-	</tr>
-	<tr class="even">
-		<td>Division 1</td><td>Division 2</td><td>Division 3</td>
-	</tr>
-	<tr>
-		<td>Division 1</td><td>Division 2</td><td>Division 3</td>
-	</tr>
-
-</table>
-
-<small><a href="#wrapper">[top]</a></small>
-<hr />
-
-<h1 id="misc">Misc Stuff - abbr, acronym, pre, code, sub, sup, etc.</h1>
-
-<p>Lorem <sup>superscript</sup> dolor <sub>subscript</sub> amet, consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. <cite>cite</cite>. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus. Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy. <acronym title="National Basketball Association">NBA</acronym> Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.  <abbr title="Avenue">AVE</abbr></p>
-
-<pre><p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam dignissim convallis est. Quisque aliquam. Donec faucibus. Nunc iaculis suscipit dui. Nam sit amet sem. Aliquam libero nisi, imperdiet at, tincidunt nec, gravida vehicula, nisl. Praesent mattis, massa quis luctus fermentum, turpis mi volutpat justo, eu volutpat enim diam eget metus. Maecenas ornare tortor. Donec sed tellus eget sapien fringilla nonummy. <acronym title="National Basketball Association">NBA</acronym> Mauris a ante. Suspendisse quam sem, consequat at, commodo vitae, feugiat in, nunc. Morbi imperdiet augue quis tellus.  <abbr title="Avenue">AVE</abbr></p></pre>
-
-<blockquote>
-	"This stylesheet is going to help so freaking much." <br />-Blockquote
-</blockquote>
-
-<small><a href="#wrapper">[top]</a></small>
-<!-- End of Sample Content -->
 END
 
 if ie6_blocking == 'light'
 file 'app/views/pages/upgrade.html.erb', <<-END
-<div id="ie6msg">
-<h4>#{current_app_name} works best with a newer browser than you are using.</h4>
-<p>To get the best possible experience using #{current_app_name}, we recommend that you upgrade your browser to a newer version. The current version is <a href="http://www.microsoft.com/windows/downloads/ie/getitnow.mspx" target="_blank">Internet Explorer 7</a> or <a href="http://www.microsoft.com/windows/internet-explorer/default.aspx target="_blank"">Internet Explorer 8</a>. The upgrade is free. If you’re using a PC at work you should contact your IT-administrator. Either way, we'd like to encourage you to stop using IE6 and try a more secure and Web Standards-friendly browser.</p>
-<p>#{current_app_name} also supports other popular browsers like <strong><a href="http://getfirefox.com" target="_blank">Firefox</a></strong> or <strong><a href="http://www.opera.com" target="_blank">Opera</a></strong>.</p>
-</div>
+#ie6msg
+  %h4
+    \#{current_app_name} works best with a newer browser than you are using.
+  %p
+    To get the best possible experience using #{current_app_name}, we recommend that you upgrade your browser to a newer version. The current version is
+    %a{ :href => "http://www.microsoft.com/windows/downloads/ie/getitnow.mspx", :target => "_blank" }
+      Internet Explorer 7
+    or <a href="http://www.microsoft.com/windows/internet-explorer/default.aspx target="_blank"">Internet Explorer 8
+    </a>
+    \. The upgrade is free. If you’re using a PC at work you should contact your IT-administrator. Either way, we'd like to encourage you to stop using IE6 and try a more secure and Web Standards-friendly browser.
+  %p
+    \#{current_app_name} also supports other popular browsers like
+    %strong
+      %a{ :href => "http://getfirefox.com", :target => "_blank" }
+        Firefox
+    or
+    %strong
+      %a{ :href => "http://www.opera.com", :target => "_blank" }
+        Opera
+    \.
+
 END
 end
 
