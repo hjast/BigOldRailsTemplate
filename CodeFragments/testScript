@@ -1,0 +1,1 @@
+Dir.glob("*.erb") { |filename| %x(html2haml #{filename} #{filename.split('.')[0] + ".html.haml"})}
